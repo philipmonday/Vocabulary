@@ -17,6 +17,9 @@
          <asp:Button ID="btnSubmit" runat="server" Text="Submit" OnClick="btnSubmit_Click" Width="75px" />
          &nbsp&nbsp
          <asp:Button ID="btnNext" runat="server" Text="Next" enabled="false" OnClick="btnNext_Click" Width="75px"/>
+         &nbsp&nbsp
+         <asp:Button ID="btnGetWebData" runat="server" Text="GetWebData" enabled="true" OnClick="btnGetWebData_Click" Width="87px"/>
+
      </p>
      <div>
          <asp:Table ID="InspectingTable" BorderStyle ="Solid" BorderWidth="5" runat="server" visible ="true" ></asp:Table>

@@ -95,7 +95,6 @@ public partial class ScheduleMgr : System.Web.UI.Page
             conn.Close();
         }
         lvSchedule.DataBind();
-        txtScheduleTitle.Text = "";
     }
 
     protected void btnOnClick(object sender, EventArgs e)
@@ -116,16 +115,33 @@ public partial class ScheduleMgr : System.Web.UI.Page
     protected void lvSchedule_DataBound(object sender, EventArgs e)
     {
         int count = lvSchedule.Items.Count;
-
+        DateTime dtNextDate = DateTime.Today;
 
         string strReviewFrequency = ConfigurationManager.AppSettings["ReviewFrequency"];
-        List<string> list = new List<string>();
- //       list = strReviewFrequency.Split(',').ToList();
-
+        List<string> listReviewFrequency = new List<string>();
+        listReviewFrequency = strReviewFrequency.Split(',').ToList();
+        if (count > 0)
+        {
+            string lastdate = ((Label)lvSchedule.Items[count - 1].FindControl("lblScheduleDate")).Text;
+            DateTime dtLastdate = Convert.ToDateTime(lastdate);
+            if (count >= listReviewFrequency.Count)
+            {
+                dtNextDate = dtLastdate.AddDays(Convert.ToInt32(listReviewFrequency.Last()));
+            }
+            else
+            {
+                string strAddDate = listReviewFrequency[count-1];
+                int addDates = Convert.ToInt32(strAddDate);
+                dtNextDate = dtLastdate.AddDays(addDates);
+            }
+            
+            txtScheduleDate.Text = dtNextDate.ToString();
+        }
         lblReviewFrequency.Text = strReviewFrequency;
 
         count++;
         txtScheduleTitle.Text = lblUnitID.Text + "-" + count.ToString();
+
 
     }
 }

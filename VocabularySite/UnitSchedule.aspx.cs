@@ -98,7 +98,7 @@ public partial class UnitSchedule : Page
         }
 
     }
-    protected void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
+    protected void lbTodo_SelectedIndexChanged(object sender, EventArgs e)
     {
         ListBoxSelectedIndexChanged(sender, e); 
     }
@@ -124,13 +124,13 @@ public partial class UnitSchedule : Page
     
     protected void btnTesting_Click(object sender, EventArgs e)
     {
-        Response.Write("<script>alert('Testing!')</script>");
+        /*Response.Write("<script>alert('Testing!')</script>");
         btnTesting.Enabled = false;
-        /*
-        Session["SelectedScheduleUnitID"] = lblSelectedScheduleUnitID.Text;
-        Session["TestingWordIndex"] = 0;
-        Response.Redirect("WordTesting.aspx");
         */
+        //Session["SelectedScheduleUnitID"] = lblSelectedScheduleUnitID.Text;
+        //Session["TestingWordIndex"] = 0;
+        Response.Redirect("WordTesting.aspx");
+        
     }
     /*
     protected void Timer1_Tick(object sender, EventArgs e)

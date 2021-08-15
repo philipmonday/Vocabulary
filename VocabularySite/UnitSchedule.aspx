@@ -32,7 +32,7 @@
                     </asp:Calendar>
                 </td>
                 <td style="vertical-align: top">
-                        <asp:ListBox ID="ListBox1" runat="server" DataSourceID="SqlDataSourceDatePick" DataTextField="UnitId" DataValueField="Id" Height="200px" Width="200px" AutoPostBack="True" OnSelectedIndexChanged="ListBox1_SelectedIndexChanged"></asp:ListBox>
+                        <asp:ListBox ID="lbTodo" runat="server" DataSourceID="SqlDataSourceDatePick" DataTextField="UnitId" DataValueField="Id" Height="200px" Width="200px" AutoPostBack="True" OnSelectedIndexChanged="lbTodo_SelectedIndexChanged"></asp:ListBox>
                         <asp:SqlDataSource ID="SqlDataSourceDatePick" runat="server"
                                 ConnectionString="<%$ ConnectionStrings:worddbConnectionString %>"
                                 ProviderName="<%$ ConnectionStrings:worddbConnectionString.ProviderName %>"

@@ -756,7 +756,8 @@ public partial class WordTraining : System.Web.UI.Page
         _loggedInTime = Convert.ToDateTime(Session["LoggedInTime"]);
 
         TimeSpan ts = DateTime.Now.Subtract(_loggedInTime);
-        return Convert.ToInt32(ts.TotalSeconds);
+        int seconds = (((ts.Days * 24) * 3600) + (ts.Hours * 3600) + (ts.Minutes * 60) + (ts.Seconds));
+        return seconds;
     }
 
     /*
