@@ -629,7 +629,7 @@ public partial class WordTraining : System.Web.UI.Page
             btnNext.Enabled = false;
 
   //          string sql = "UPDATE unitstudyschedule SET Result=1, TimeUsed='"+ lblTimer.Text + "' WHERE id = "+ Session["SelectedScheduleID"].ToString();
-            string sql = "UPDATE unitstudyschedule SET Result=1 WHERE id = " + Session["SelectedScheduleID"].ToString();
+            string sql = "UPDATE unitstudyschedule SET Result=1, CompleteDate='"+DateTime.Now.Date.ToString()+"' WHERE id = " + Session["SelectedScheduleID"].ToString();
 
             string connectionStr;
 

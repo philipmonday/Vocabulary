@@ -14,49 +14,12 @@ using System.Net;
 using System.Globalization;
 
 
-public class HttpCommon
-{
-    /// <summary>
-    /// Http同步Get同步请求
-    /// </summary>
-    /// <param name="url">Url地址</param>
-    /// <param name="encode">编码(默认UTF8)</param>
-    /// <returns></returns>
-    public static string HttpGet(string url, Encoding encode = null)
-    {
-        System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-
-        string result;
-
-        try
-        {
-            var webClient = new WebClient { Encoding = Encoding.UTF8 };
-
-            if (encode != null)
-                webClient.Encoding = encode;
-
-            result = webClient.DownloadString(url);
-        }
-        catch (Exception ex)
-        {
-            result = ex.Message;
-        }
-
-        return result;
-    }
-}
-    public partial class WordTesting : Page
+public partial class WordTesting : Page
 {
     
     protected void Page_Load(object sender, EventArgs e)
     {
-        string url = "https://api.dictionaryapi.dev/api/v2/entries/en/hello";
-        //string url = "https://dictionaryapi.dev/";
-        //MessageBox.Show(HttpCommon.HttpGet(url));
-        Response.Write(HttpCommon.HttpGet(url));                        
-        
 
-        /*
         int testingWordIndex = 0;
 
         testingWordIndex = GetTestingWordIndex();
@@ -449,33 +412,8 @@ public class HttpCommon
         int loopCount = GetLoopCount();
         return loopCount * TimesInEveryLoop + indexInLoop;
     }
-    /// <summary>
-    /// 发起GET同步请求
-    /// </summary>
-    /// <param name="url">请求地址</param>
-    /// <param name="headers">请求头</param>
-    /// <param name="timeOut">超时时间</param>
-    /// <returns></returns>
-    public static string HttpGet(string url, Dictionary<string, string> headers = null, int timeOut = 30)
-    {
-        using (HttpClient client = new HttpClient())
-        {
-            client.Timeout = new TimeSpan(0, 0, timeOut);
-            if (headers != null)
-            {
-                foreach (var header in headers)
-                    client.DefaultRequestHeaders.Add(header.Key, header.Value);
-            }
-            HttpResponseMessage response = client.GetAsync(url).Result;
-            return response.Content.ReadAsStringAsync().Result;
-        }
-    }
-
     protected void btnGetWebData_Click(object sender, EventArgs e)
     {
-        string url = "https://api.dictionaryapi.dev/api/v2/entries/en/hello";
-        string response = HttpGet(url);
-        lblWordBody.Text = response;
-  
+
     }
 }
