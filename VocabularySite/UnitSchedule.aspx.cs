@@ -127,8 +127,9 @@ public partial class UnitSchedule : Page
         /*Response.Write("<script>alert('Testing!')</script>");
         btnTesting.Enabled = false;
         */
-        //Session["SelectedScheduleUnitID"] = lblSelectedScheduleUnitID.Text;
-        //Session["TestingWordIndex"] = 0;
+        Session["SelectedScheduleUnitID"] = lblSelectedScheduleUnitID.Text;
+        Session["SelectedScheduleID"] = lblSelectedScheduleID.Text;
+        Session["CurrentPageMode"] = 1;
         Response.Redirect("WordTesting.aspx");
         
     }
