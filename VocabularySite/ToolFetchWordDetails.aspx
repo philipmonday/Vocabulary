@@ -22,9 +22,11 @@
             <td >
                  <asp:Panel ID="Panel3" runat="server" Visible ="false" Height="420px" Width="250px">
                      <asp:Panel ID="Panel4" runat="server" Height="390px" Width="250px">
-                         <asp:Label ID="lblWordTitle" runat="server" Text="Title"></asp:Label>
+                         UnitId:<asp:TextBox ID="txtUnit" runat="server" Width="86px"></asp:TextBox>
                          <br />
-                         <asp:TextBox ID="txtWordBody" runat="server" Text="" Height="162px" TextMode="MultiLine" Width="250px"></asp:TextBox>
+                         <asp:Label ID="lblWordBody" runat="server" Text="Title"></asp:Label>
+                         <br />
+                         <asp:TextBox ID="txtWordDetails" runat="server" Text="" Height="162px" TextMode="MultiLine" Width="250px"></asp:TextBox>
                          <asp:Label ID="lblParseResult" runat="server" Text=""></asp:Label>
                      </asp:Panel>
                      <asp:Button ID="btnInsertDB" runat="server" Text="InsertDB" OnClick="btnInsertDB_Click" />

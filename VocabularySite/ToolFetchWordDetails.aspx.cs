@@ -10,6 +10,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using api.dictionaryapi.dev;
 
 public partial class ToolFetchWordDetails : System.Web.UI.Page
 {
@@ -58,16 +59,24 @@ public partial class ToolFetchWordDetails : System.Web.UI.Page
         string url = "https://api.dictionaryapi.dev/api/v2/entries/en/"+ word;
         //string url = "https://dictionaryapi.dev/";
         string temp = MyHttpTool.HttpGet(url);
-        txtWordBody.Text = temp.Substring(1, temp.Length - 2);
+        txtWordDetails.Text = temp;// temp.Substring(1, temp.Length - 2);
     }
 
     protected void btnInsertDB_Click(object sender, EventArgs e)
     {
-        api.dictionaryapi.dev.Root myRoot;
+        if(txtUnit.Text == string.Empty)
+        {
+            lblParseResult.Text = "Please Input unitID";
+            return;
+        }
+
+        List<api.dictionaryapi.dev.Root> myRoot;
+        api.dictionaryapi.dev.Root RootFirst;
         try
         {
-            myRoot = JsonConvert.DeserializeObject<api.dictionaryapi.dev.Root>(txtWordBody.Text);
-            lblParseResult.Text = myRoot.word;
+            myRoot = JsonConvert.DeserializeObject<List<api.dictionaryapi.dev.Root>>(txtWordDetails.Text);
+            RootFirst = myRoot[0];
+            lblParseResult.Text = RootFirst.word + " Parsing Start...";
         }
         catch (Exception ex)
         {
@@ -99,20 +108,23 @@ public partial class ToolFetchWordDetails : System.Web.UI.Page
                                  "VALUES (@Id, @UnitId, @WordBody, @Desc1, @Desc2, @Desc3, @Desc4, @Desc5,@Desc6)";
 
             MySqlCommand cmd = new MySqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("Id", (iRowCount.ToString()));
-            cmd.Parameters.AddWithValue("UnitId", "14");
-            cmd.Parameters.AddWithValue("WordBody", myRoot.word);
+            cmd.Parameters.AddWithValue("Id", iRowCount.ToString());
+            cmd.Parameters.AddWithValue("UnitId", txtUnit.Text);
+            cmd.Parameters.AddWithValue("WordBody", RootFirst.word);
             int DescIndex = 0;
-            foreach (api.dictionaryapi.dev.Meaning m in myRoot.meanings)
+            foreach (api.dictionaryapi.dev.Root r in myRoot)
             {
-                foreach (api.dictionaryapi.dev.Definition d in m.definitions)
+                foreach (api.dictionaryapi.dev.Meaning m in r.meanings)
                 {
-                    DescIndex++;
-                    if (DescIndex <= 6)
+                    foreach (api.dictionaryapi.dev.Definition d in m.definitions)
                     {
-                        string partOfSpeech = m.partOfSpeech;
-                        string tempDesc = d.definition;
-                        cmd.Parameters.AddWithValue("Desc" + DescIndex.ToString(), partOfSpeech + " " + tempDesc);
+                        DescIndex++;
+                        if (DescIndex <= 6)
+                        {
+                            string partOfSpeech = m.partOfSpeech;
+                            string tempDesc = d.definition;
+                            cmd.Parameters.AddWithValue("Desc" + DescIndex.ToString(), partOfSpeech + " " + tempDesc);
+                        }
                     }
                 }
             }
@@ -123,7 +135,45 @@ public partial class ToolFetchWordDetails : System.Web.UI.Page
             }
 
             cmd.ExecuteNonQuery();
-            //conn.Close();
+
+            //insert new Synonyms
+            string sqlSynonyms = "INSERT INTO WordSynonyms (WordId, Synonyms) VALUES (@wordId, @Synonyms)";
+            foreach (api.dictionaryapi.dev.Root r in myRoot)
+            {
+                foreach (api.dictionaryapi.dev.Meaning m in r.meanings)
+                {
+                    foreach (api.dictionaryapi.dev.Definition d in m.definitions)
+                    {
+                        foreach (string strSynonyms in d.synonyms)
+                        {
+                            MySqlCommand cmdSynonyms = new MySqlCommand(sqlSynonyms, conn);
+                            cmdSynonyms.Parameters.AddWithValue("wordId", iRowCount.ToString());
+                            cmdSynonyms.Parameters.AddWithValue("Synonyms", strSynonyms);
+                            cmdSynonyms.ExecuteNonQuery();
+                         }
+                    }
+                }
+            }
+
+            //insert new Example
+            string sqlExample = "INSERT INTO WordExample (WordId, Example) VALUES (@wordId, @Example)";
+            foreach (api.dictionaryapi.dev.Root r in myRoot)
+            {
+                foreach (api.dictionaryapi.dev.Meaning m in r.meanings)
+                {
+                    foreach (api.dictionaryapi.dev.Definition d in m.definitions)
+                    {
+                        if (d.example != null)
+                        {
+                            MySqlCommand cmdExample = new MySqlCommand(sqlExample, conn);
+                            cmdExample.Parameters.AddWithValue("wordId", iRowCount.ToString());
+                            cmdExample.Parameters.AddWithValue("Example", d.example);
+                            cmdExample.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+
         }
         catch (Exception ex)
         {
@@ -133,12 +183,13 @@ public partial class ToolFetchWordDetails : System.Web.UI.Page
         {
             conn.Close();
         }
+        lblParseResult.Text = RootFirst.word + " Parsing Finished.";
     }
 
     protected void lbWordList_SelectedIndexChanged(object sender, EventArgs e)
     {
-        lblWordTitle.Text = lbWordList.SelectedItem.Text;
-        txtWordBody.Text = "";
+        lblWordBody.Text = lbWordList.SelectedItem.Text;
+        txtWordDetails.Text = "";
     }
 }
 
@@ -176,153 +227,3 @@ public class MyHttpTool
     }
 }
 
-//使用https://json2csharp.com/生成下面的类，然后将他们放入namespace
-namespace dictionaryapi.com//Merriam-Webster
-{
-    public class AppShortdef
-    {
-        public string hw { get; set; }
-        public string fl { get; set; }
-        public List<string> def { get; set; }
-    }
-
-    public class Target
-    {
-        public string tuuid { get; set; }
-        public string tsrc { get; set; }
-    }
-
-    public class Meta
-    {
-        public string id { get; set; }
-        public string uuid { get; set; }
-        public string src { get; set; }
-        public string section { get; set; }
-        public string highlight { get; set; }
-        public List<string> stems { get; set; }
-
-        [JsonProperty("app-shortdef")]
-        public AppShortdef AppShortdef { get; set; }
-        public bool offensive { get; set; }
-        public Target target { get; set; }
-    }
-
-    public class Sound
-    {
-        public string audio { get; set; }
-    }
-
-    public class Pr
-    {
-        public string ipa { get; set; }
-        public Sound sound { get; set; }
-    }
-
-    public class Altpr
-    {
-        public string ipa { get; set; }
-    }
-
-    public class Hwi
-    {
-        public string hw { get; set; }
-        public List<Pr> prs { get; set; }
-        public List<Altpr> altprs { get; set; }
-    }
-
-    public class In
-    {
-        public string il { get; set; }
-        public string @if { get; set; }
-        public string ifc { get; set; }
-    }
-
-    public class Def
-    {
-        public List<List<List<object>>> sseq { get; set; }
-    }
-
-    public class Vr
-    {
-        public string vl { get; set; }
-        public string va { get; set; }
-    }
-
-    public class Dro
-    {
-        public string drp { get; set; }
-        public List<Def> def { get; set; }
-        public List<Vr> vrs { get; set; }
-    }
-
-    public class Uro
-    {
-        public string ure { get; set; }
-        public List<Pr> prs { get; set; }
-        public string fl { get; set; }
-        public List<List<object>> utxt { get; set; }
-        public List<In> ins { get; set; }
-        public string gram { get; set; }
-    }
-
-    public class Root
-    {
-        public Meta meta { get; set; }
-        public int hom { get; set; }
-        public Hwi hwi { get; set; }
-        public string fl { get; set; }
-        public List<In> ins { get; set; }
-        public string gram { get; set; }
-        public List<Def> def { get; set; }
-        public List<Dro> dros { get; set; }
-        public List<string> dxnls { get; set; }
-        public List<string> shortdef { get; set; }
-        public List<Uro> uros { get; set; }
-    }
-}
-
-namespace api.dictionaryapi.dev
-{
-    public class Phonetic
-    {
-        public string text { get; set; }
-        public string audio { get; set; }
-    }
-
-    public class Definition
-    {
-        public string definition { get; set; }
-        public string example { get; set; }
-        public List<string> synonyms { get; set; }
-    }
-
-    public class Meaning
-    {
-        private string _partOfSpeech = "";
-        public string partOfSpeech
-        {
-            get { return _partOfSpeech; }
-            set
-            {
-                if (value.Contains("exclamation"))
-                { _partOfSpeech = "e."; }
-                else if (value.Contains("noun"))
-                { _partOfSpeech = "n."; }
-                else if (value.Contains("verb"))
-                { _partOfSpeech = "v."; }
-                else if (value.Contains("adjective"))
-                { _partOfSpeech = "adj."; }
-                //else
-                //{ _partOfSpeech = String.IsNullOrEmpty(value) ? "" : value; }
-            }
-        }
-        public List<Definition> definitions { get; set; }
-    }
-
-    public class Root
-    {
-        public string word { get; set; }
-        public List<Phonetic> phonetics { get; set; }
-        public List<Meaning> meanings { get; set; }
-    }
-}

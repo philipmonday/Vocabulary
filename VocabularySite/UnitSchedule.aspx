@@ -72,7 +72,10 @@
         <asp:Button ID="btnTraining" runat="server" OnClick="btnTraining_Click" Text="Training" />
         &nbsp&nbsp
         <asp:Button ID="btnTesting" runat="server" OnClick="btnTesting_Click" Text="Testing" />
-        &nbsp&nbsp
+         &nbsp&nbsp
+        <asp:Button ID="btnSynonyms" runat="server" OnClick="btnSynonyms_Click" Text="Synonyms" />
+
+               &nbsp&nbsp
         <asp:Button ID="btnScheduleMgr" runat="server" OnClick="btnScheduleMgr_Click" Text="ScheduleMgr" />
 
     </div>

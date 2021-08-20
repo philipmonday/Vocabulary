@@ -45,6 +45,27 @@ public partial class UnitWords : System.Web.UI.Page
                 lblDesc6.Text = rdr[6].ToString();
             }
             rdr.Close();
+
+            lblSynonyms.Text = string.Empty;
+            string sqlSynonyms = "SELECT Synonyms FROM wordSynonyms Where wordId = " + ListBox1.SelectedItem.Value.ToString();
+            MySqlCommand cmdSynonyms = new MySqlCommand(sqlSynonyms, conn);
+            MySqlDataReader rdrSynonyms = cmdSynonyms.ExecuteReader();
+            while (rdrSynonyms.Read())
+            {
+                lblSynonyms.Text = rdrSynonyms[0].ToString() + ", " + lblSynonyms.Text;
+            }
+            rdrSynonyms.Close();
+
+            lblExample.Text = string.Empty;
+            string sqlExample = "SELECT Example FROM wordExample Where wordId = " + ListBox1.SelectedItem.Value.ToString();
+            MySqlCommand cmdExample = new MySqlCommand(sqlExample, conn);
+            MySqlDataReader rdrExample = cmdExample.ExecuteReader();
+            while (rdrExample.Read())
+            {
+                lblExample.Text = rdrExample[0].ToString() + "\r\n " + lblExample.Text;
+            }
+            rdrExample.Close();
+
             conn.Close();
         }
         catch (Exception ex)

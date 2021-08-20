@@ -25,6 +25,8 @@
                     <p>
                     <asp:Label ID="lblWordBody" runat="server" Width="200px" Font-Bold="True" Font-Size="XX-Large" ForeColor="#0066FF" Text=""></asp:Label>
                     <br />
+                        Definitions:
+                    <br />
                     <asp:Label ID="lblDesc1" runat="server" Font-Size="Small" ForeColor="#0066FF" Text="" ></asp:Label>
                     <br />
                     <asp:Label ID="lblDesc2" runat="server" Font-Size="Small" ForeColor="#0066FF" Text="" ></asp:Label>
@@ -36,6 +38,15 @@
                     <asp:Label ID="lblDesc5" runat="server" Font-Size="Small" ForeColor="#0066FF" Text="" ></asp:Label>
                     <br />
                     <asp:Label ID="lblDesc6" runat="server" Font-Size="Small" ForeColor="#0066FF" Text="" ></asp:Label>
+                    <br />
+                        Synonyms:
+                    <br />
+                    <asp:Label ID="lblSynonyms" runat="server" Font-Size="Small" ForeColor="#0066FF" Text="" ></asp:Label>
+                     <br /><br />
+                        Example:
+                    <br />
+                    <asp:Label ID="lblExample" runat="server" Font-Size="Small" ForeColor="#0066FF" Text="" ></asp:Label>
+                    
                     <br />
                     </p>
                 </td>

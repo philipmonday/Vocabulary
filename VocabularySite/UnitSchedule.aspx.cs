@@ -131,19 +131,24 @@ public partial class UnitSchedule : Page
         Session["SelectedScheduleID"] = lblSelectedScheduleID.Text;
         Session["CurrentPageMode"] = 1;
         Response.Redirect("WordTesting.aspx");
-        
     }
-    /*
-    protected void Timer1_Tick(object sender, EventArgs e)
+
+    protected void btnSynonyms_Click(object sender, EventArgs e)
     {
-        Label1.Text = DateTime.Now.ToString();
-    }*/
+        Session["SelectedScheduleUnitID"] = lblSelectedScheduleUnitID.Text;
+        Session["SelectedScheduleID"] = lblSelectedScheduleID.Text;
+        Session["CurrentPageMode"] = 2;
+        Response.Redirect("WordTesting.aspx");
+    }
 
     protected void btnScheduleMgr_Click(object sender, EventArgs e)
     {
         Session["SelectedScheduleUnitID"] = lblSelectedScheduleUnitID.Text;
         Response.Redirect("ScheduleMgr.aspx");
     }
-
-
+    /*
+    protected void Timer1_Tick(object sender, EventArgs e)
+    {
+        Label1.Text = DateTime.Now.ToString();
+    }*/
 }

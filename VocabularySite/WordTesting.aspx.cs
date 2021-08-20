@@ -11,7 +11,7 @@ using System.Collections;
 public partial class WordTesting : System.Web.UI.Page
 {
     protected enum enum_TraningResult { Wrong, Correct, WithHint, QuickCorrect };
-    protected enum enum_PageMode { WordDesc, CompleteSentence};
+    protected enum enum_PageMode { WordDesc, CompleteSentence, Synonyms};
 
 
     protected enum_PageMode GetCurrentPageMode()
@@ -29,6 +29,10 @@ public partial class WordTesting : System.Web.UI.Page
         else if (Convert.ToInt32(Session["CurrentPageMode"]) == 1)
         {
             tempMode = enum_PageMode.CompleteSentence;
+        }
+        else if (Convert.ToInt32(Session["CurrentPageMode"]) == 2)
+        {
+            tempMode = enum_PageMode.Synonyms;
         }
         return tempMode;
     }
@@ -364,6 +368,57 @@ public partial class WordTesting : System.Web.UI.Page
 
         return strExampleFinal;
     }
+
+    protected string GetWordSynonyms(string wordId)
+    {
+        bool bRecordExist = false;
+        string strSynonyms = "";
+        ArrayList strSynonymsArr = new ArrayList();
+        string strWordBody = "";
+        string strSynonymsFinal = "";
+        string connectionStr;
+        connectionStr = ConfigurationManager.ConnectionStrings["worddbConnectionString"].ConnectionString;
+        MySqlConnection conn = new MySqlConnection(connectionStr);
+        try
+        {
+            conn.Open();
+            string sql = "SELECT WordSynonyms.Id, WordSynonyms.WordId, WordSynonyms.Synonyms, word.WordBody FROM WordSynonyms, word WHERE wordSynonyms.WordId = word.Id and word.id = " + wordId;
+
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                bRecordExist = true;
+                strSynonyms = (rdr.IsDBNull(2) ? "" : rdr[2].ToString());
+                strSynonymsArr.Add(strSynonyms);
+                strWordBody = (rdr.IsDBNull(3) ? "" : rdr[3].ToString());
+
+            }
+            rdr.Close();
+
+            if (bRecordExist)
+            {
+                Random rnd = new Random();
+                int rndKey = rnd.Next(strSynonymsArr.Count - 1);
+                strSynonymsFinal = (string)strSynonymsArr[rndKey];
+            }
+            else
+            {
+                strSynonymsFinal = "NO Synonyms found";
+            }
+            //conn.Close();
+        }
+        catch (Exception ex)
+        {
+            //Console.WriteLine(ex.ToString());
+        }
+        finally
+        {
+            conn.Close();
+        }
+
+        return strSynonymsFinal;
+    }
     protected string[] GetOptions(enum_PageMode pageMode, int rowId)
     {
         //返回的数组中，前4个为选项
@@ -403,6 +458,11 @@ public partial class WordTesting : System.Web.UI.Page
             {
                 straryOptions[i] = GetWordBody(array1[i]);
             }
+            else if (pageMode == enum_PageMode.Synonyms)
+            {
+                string wordId = GetWordId(array1[i]);
+                straryOptions[i] = GetWordSynonyms(wordId);
+            }
         }
         straryOptions[4] = intRowIdIndex.ToString();
 
@@ -423,6 +483,10 @@ public partial class WordTesting : System.Web.UI.Page
         {
             string wordId = GetWordId(rowId);
             lblQuizBody.Text = GetWordExample(wordId);
+        }
+        else if (GetCurrentPageMode()== enum_PageMode.Synonyms)
+        {
+            lblQuizBody.Text = ((Label)HolderTable.Rows[rowId].Cells[2].Controls[0]).Text;
         }
 
         string[] strarrOptions = GetOptions(GetCurrentPageMode(),rowId);

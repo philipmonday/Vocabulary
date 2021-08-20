@@ -12,57 +12,11 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using api.dictionaryapi.dev;
+using dictionaryapi.com;
 
 namespace VocabularyWin
 {
-    public class Phonetic
-    {
-        public string text { get; set; }
-        public string audio { get; set; }
-    }
-
-    public class Definition
-    {
-        public string definition { get; set; }
-        public string example { get; set; }
-        public List<string> synonyms { get; set; }
-    }
-
-    public class Meaning
-    {
-        private string _partOfSpeech = "";
-        public string partOfSpeech {
-            get { return _partOfSpeech; }
-            set
-            {
-                if (value.Contains("exclamation"))
-                { _partOfSpeech = "e."; }
-                else if (value.Contains("noun"))
-                { _partOfSpeech = "n."; }
-                else if (value.Contains("verb"))
-                { _partOfSpeech = "v."; }
-                else if (value.Contains("adjective"))
-                { _partOfSpeech = "adj."; }
-                //else
-                //{ _partOfSpeech = String.IsNullOrEmpty(value) ? "" : value; }
-            }
-        }
-        public List<Definition> definitions { get; set; }
-    }
-
-    public class Root
-    {
-        public string word { get; set; }
-        public List<Phonetic> phonetics { get; set; }
-        public List<Meaning> meanings { get; set; }
-    }
-
-    public class SearchResult
-    {
-        public string Title { get; set; }
-        public string Content { get; set; }
-        public string Url { get; set; }
-    }
 
     public partial class Form1 : Form
     {
@@ -76,7 +30,7 @@ namespace VocabularyWin
             string url = "https://api.dictionaryapi.dev/api/v2/entries/en/impending";
             //string url = "https://api.dictionaryapi.dev/api/v2/entries/en/hello";
             string temp = HttpCommon.HttpGet(url);
-            string response = temp.Substring(1, temp.Length - 2);
+            string response = temp;//.Substring(1, temp.Length - 2);
             /*string googleSearchText = @"
 {""word"":""hello"",""phonetic"":""həˈləʊ"",""phonetics"":[{""text"":""həˈləʊ"",""audio"":""//ssl.gstatic.com/dictionary/static/sounds/20200429/hello--_gb_1.mp3""},{""text"":""hɛˈləʊ""}],""origin"":""early 19th century: variant of earlier hollo ; related to holla."",""meanings"":[{""partOfSpeech"":""exclamation"",""definitions"":[{""definition"":""used as a greeting or to begin a phone conversation."",""example"":""hello there, Katie!"",""synonyms"":[],""antonyms"":[]}]},{""partOfSpeech"":""noun"",""definitions"":[{""definition"":""an utterance of ‘hello’; a greeting."",""example"":""she was getting polite nods and hellos from people"",""synonyms"":[],""antonyms"":[]}]},{""partOfSpeech"":""verb"",""definitions"":[{""definition"":""say or shout ‘hello’."",""example"":""I pressed the phone button and helloed"",""synonyms"":[],""antonyms"":[]}]}]}
 ";
@@ -86,9 +40,11 @@ namespace VocabularyWin
 
             try
             {
-                Root myRoot = JsonConvert.DeserializeObject<Root>(response);
-                MessageBox.Show(myRoot.word);
-                foreach (Meaning m in myRoot.meanings)
+                List < api.dictionaryapi.dev.Root> myRoot = JsonConvert.DeserializeObject<List<api.dictionaryapi.dev.Root>>(response);
+                api.dictionaryapi.dev.Root oneRoot = myRoot[0];
+
+                MessageBox.Show(oneRoot.word);
+                foreach (Meaning m in oneRoot.meanings)
                 {
                     MessageBox.Show(m.partOfSpeech + ":" + m.definitions[0].definition);
                 }
@@ -101,6 +57,31 @@ namespace VocabularyWin
  //           MessageBox.Show(myRoot.meanings[0].partOfSpeech + ":" + myRoot.meanings[0].definitions[0].definition);
   
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string url = "https://dictionaryapi.com/api/v3/references/learners/json/hello?key=f8c7ea01-c305-41d2-8d80-5d6551d604f3";
+            string temp = HttpCommon.HttpGet(url);
+            string response = temp;//.Substring(1, temp.Length - 2);
+  
+            try
+            {
+
+                List<dictionaryapi.com.Root> myRoot = JsonConvert.DeserializeObject<List<dictionaryapi.com.Root>>(response);
+                dictionaryapi.com.Root firstRoot = myRoot[0];
+                MessageBox.Show(firstRoot.meta.id);
+/*                foreach (Meaning m in myRoot.meanings)
+                {
+                    MessageBox.Show(m.partOfSpeech + ":" + m.definitions[0].definition);
+                }*/
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            //           MessageBox.Show(myRoot.meanings[0].partOfSpeech + ":" + myRoot.meanings[0].definitions[0].definition);
+     }
     }
     public class HttpCommon
     {
