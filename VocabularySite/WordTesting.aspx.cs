@@ -398,7 +398,8 @@ public partial class WordTesting : System.Web.UI.Page
 
             if (bRecordExist)
             {
-                Random rnd = new Random();
+                int seed = Guid.NewGuid().GetHashCode();
+                Random rnd = new Random(seed);
                 int rndKey = rnd.Next(strSynonymsArr.Count - 1);
                 strSynonymsFinal = (string)strSynonymsArr[rndKey];
             }
@@ -424,11 +425,26 @@ public partial class WordTesting : System.Web.UI.Page
         //返回的数组中，前4个为选项
         //第5个为正确答案索引
         string[] straryOptions = new string[5];
-        bool blRowIdFound = false;
-        int intRowIdIndex = 0;
+        //bool blRowIdFound = false;
+        //int intRowIdIndex = 0;
 
         int PerUnitWordsAmount = Convert.ToInt32(ConfigurationManager.AppSettings["PerUnitWordsAmount"]);
-        int[] array1 = UseDoubleArrayToNonRepeatedRandom(PerUnitWordsAmount - 1);
+        int[] array1 = UseDoubleArrayToNonRepeatedRandom(PerUnitWordsAmount);
+
+        int seed = Guid.NewGuid().GetHashCode();
+        Random rnd = new Random(seed);
+        int currentWordOptionKey = rnd.Next(4);
+
+        for (int i = 0; i < array1.Length; i++)
+        {
+            if (array1[i] == rowId) //说明i对应的词中是待测的词
+            {
+                int temp = array1[currentWordOptionKey];
+                array1[currentWordOptionKey] = array1[i];
+                array1[i] = temp;
+            }
+        }
+        /*
         for (int i = 0; i <= 3; i++)
         {
             if (array1[i] == rowId) //说明随机选的4个词中正好有待测的词，
@@ -446,8 +462,9 @@ public partial class WordTesting : System.Web.UI.Page
             int rndKey = rnd.Next(4);
             array1[rndKey] = rowId;
             intRowIdIndex = rndKey;
-        }
+        }*/
 
+        int findIndexStart = currentWordOptionKey;
         for (int i = 0; i <= 3; i++)
         {
             if (pageMode == enum_PageMode.WordDesc)
@@ -460,14 +477,11 @@ public partial class WordTesting : System.Web.UI.Page
             }
             else if (pageMode == enum_PageMode.Synonyms)
             {
-                int findIndexStart = intRowIdIndex;
-                int tryTimes = 0;
                 string synonymsFound = string.Empty;
-                if (i != intRowIdIndex)
+                if (i != currentWordOptionKey)
                 {
-                    while (synonymsFound == string.Empty && tryTimes <15)
+                    while (synonymsFound == string.Empty && findIndexStart < array1.Length-1)
                     {
-                        tryTimes++;
                         findIndexStart++;
                         string wordId = GetWordId(array1[findIndexStart]);
                         synonymsFound = GetWordSynonyms(wordId); 
@@ -487,7 +501,7 @@ public partial class WordTesting : System.Web.UI.Page
 
             }
         }
-        straryOptions[4] = intRowIdIndex.ToString();
+        straryOptions[4] = currentWordOptionKey.ToString();
 
         return straryOptions;
     }
@@ -539,8 +553,8 @@ public partial class WordTesting : System.Web.UI.Page
         {
             return string.Empty;
         }
-
-        Random rnd = new Random();
+        int seed = Guid.NewGuid().GetHashCode();
+        Random rnd = new Random(seed);
         int rndKey, tryTimes = 0;
         while (strOption == string.Empty && tryTimes < 20)
         {
@@ -600,7 +614,7 @@ public partial class WordTesting : System.Web.UI.Page
         for (int j = 0; j < length; j++)
         {
             idx = radom.Next(0, site - 1);  // 生成随机索引数
-            array[j] = index[idx];          // 在随机索引位置取出一个数，保存到结果数组 
+            array[j] = index[idx]-1;          // 在随机索引位置取出一个数，保存到结果数组 
             index[idx] = index[site - 1];   // 作废当前索引位置数据，并用数组的最后一个数据代替之
             site--;                         // 索引位置的上限减一（弃置最后一个数据）
         }
