@@ -53,14 +53,6 @@ public partial class ToolFetchWordDetails : System.Web.UI.Page
         Panel3.Visible = false;
     }
 
-    protected void btnFetch_Click(object sender, EventArgs e)
-    {
-        string word = lbWordList.SelectedItem.Text;
-        string url = "https://api.dictionaryapi.dev/api/v2/entries/en/"+ word;
-        //string url = "https://dictionaryapi.dev/";
-        string temp = MyHttpTool.HttpGet(url);
-        txtWordDetails.Text = temp;// temp.Substring(1, temp.Length - 2);
-    }
 
     protected void btnInsertDB_Click(object sender, EventArgs e)
     {
@@ -188,8 +180,13 @@ public partial class ToolFetchWordDetails : System.Web.UI.Page
 
     protected void lbWordList_SelectedIndexChanged(object sender, EventArgs e)
     {
-        lblWordBody.Text = lbWordList.SelectedItem.Text;
-        txtWordDetails.Text = "";
+        string word = lbWordList.SelectedItem.Text;
+        lblWordBody.Text = word;
+        
+        string url = "https://api.dictionaryapi.dev/api/v2/entries/en/" + word;
+        //string url = "https://dictionaryapi.dev/";
+        string temp = MyHttpTool.HttpGet(url);
+        txtWordDetails.Text = temp;
     }
 }
 

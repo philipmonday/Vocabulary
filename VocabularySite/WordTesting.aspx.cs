@@ -404,7 +404,7 @@ public partial class WordTesting : System.Web.UI.Page
             }
             else
             {
-                strSynonymsFinal = "NO Synonyms found";
+                strSynonymsFinal = string.Empty;
             }
             //conn.Close();
         }
@@ -460,14 +460,38 @@ public partial class WordTesting : System.Web.UI.Page
             }
             else if (pageMode == enum_PageMode.Synonyms)
             {
-                string wordId = GetWordId(array1[i]);
-                straryOptions[i] = GetWordSynonyms(wordId);
+                int findIndexStart = intRowIdIndex;
+                int tryTimes = 0;
+                string synonymsFound = string.Empty;
+                if (i != intRowIdIndex)
+                {
+                    while (synonymsFound == string.Empty && tryTimes <15)
+                    {
+                        tryTimes++;
+                        findIndexStart++;
+                        string wordId = GetWordId(array1[findIndexStart]);
+                        synonymsFound = GetWordSynonyms(wordId); 
+                    }
+                }
+                else
+                {
+                    string wordId = GetWordId(array1[i]);
+                    synonymsFound = GetWordSynonyms(wordId);
+                }
+
+                if (synonymsFound == string.Empty)
+                {
+                    synonymsFound = "NO Synonyms found";
+                }
+                straryOptions[i] = synonymsFound;
+
             }
         }
         straryOptions[4] = intRowIdIndex.ToString();
 
         return straryOptions;
     }
+
     protected void ShowQuizAndOptions(int rowId)
     {
         if (rowId >= Convert.ToInt32(ConfigurationManager.AppSettings["PerUnitWordsAmount"]))
@@ -639,8 +663,11 @@ public partial class WordTesting : System.Web.UI.Page
         }
         else
         {
+            int idx = GetTestingWordIndex();
+            int rowId = GetRowIdByCurrentLoopIndex(idx);
             lblSubmitResult.ForeColor = System.Drawing.Color.Red;
-            lblSubmitResult.Text = "SORRY! Anwser is " + Convert.ToString(iCorrectOptionIndex + 1) + ".";
+            lblSubmitResult.Text = "SORRY! Anwser is " + Convert.ToString(iCorrectOptionIndex + 1) + ". <br/>Definition: " +
+                                    GetWordAllDesc(rowId);
             UpdateTrainingResult(enum_TraningResult.Wrong);
         }
 

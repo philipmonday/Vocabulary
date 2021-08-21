@@ -487,8 +487,11 @@ public partial class WordTraining : System.Web.UI.Page
         }
         else
         {
+            int idx = GetTestingWordIndex();
+            int rowId = GetRowIdByCurrentLoopIndex(idx);
             lblSubmitResult.ForeColor = System.Drawing.Color.Red;
-            lblSubmitResult.Text = "SORRY! Anwser is " + Convert.ToString(iCorrectOptionIndex + 1) + ".";
+            lblSubmitResult.Text = "SORRY! Anwser is " + Convert.ToString(iCorrectOptionIndex + 1) + ". <br/>Definition: " +
+                                    GetWordAllDesc(rowId);
             UpdateTrainingResult(enum_TraningResult.Wrong);
         }
 

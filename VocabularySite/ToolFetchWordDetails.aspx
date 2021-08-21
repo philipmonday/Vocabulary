@@ -16,7 +16,7 @@
                      <asp:ListBox ID="lbWordList" runat="server" Height="390px"  Width="250px"  AutoPostBack="True" OnSelectedIndexChanged="lbWordList_SelectedIndexChanged"></asp:ListBox>
                          <br />
                      <asp:Button ID="btnBack" runat="server" Text="Back" OnClick="btnBack_Click"/>
-                     <asp:Button ID="btnFetch" runat="server" Text="Fetch" OnClick="btnFetch_Click"/>
+                    
                  </asp:Panel>
             </td>
             <td >
